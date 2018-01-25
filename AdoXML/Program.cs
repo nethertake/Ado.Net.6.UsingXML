@@ -12,7 +12,7 @@ namespace AdoXML
         static void Main(string[] args)
         {
 
-            Exmpl_01();
+            Exmpl_02();
 
         }
 
@@ -29,9 +29,23 @@ namespace AdoXML
                 );
 
             Console.WriteLine(xBook.ToString());
-
-
         }
+
+        public static void Exmpl_02()
+        {
+
+            //1 method из файла
+
+            XDocument doc = XDocument.Load(@"\\dc\Студенты\ПКО\SDP-162\ADO.NET\PBook.xml");
+            Console.WriteLine(doc.ToString());
+
+            //2 method из строки
+
+            string str = doc.ToString();
+            XDocument docFromStr = XDocument.Parse(str);
+            Console.WriteLine(docFromStr.ToString());
+        }
+
 
     }
 }
