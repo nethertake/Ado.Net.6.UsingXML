@@ -10,13 +10,13 @@ namespace AdoXML
 {
     class Program
     {
-       static public Model1 db = new Model1();
+        static public Model1 db = new Model1();
         static void Main(string[] args)
         {
 
             //Exmpl_02();
             //Exmpl_03();
-            Exmpl_04();
+            Exmpl_06();
         }
 
         public static void Exmpl_01()
@@ -63,15 +63,70 @@ namespace AdoXML
             XElement serviceHistory = new XElement("TrackServiceHistory", from service in db.TrackServiceHistory.ToList()
                                                                           select
                                                                           new XElement("ServiceHistory", new XAttribute("ServiceHistoryId", service.intServiceHistoryId),
+                                                                          new XElement("dRepairDate", service.dRepairDate),
                                                                           new XElement("strDescriptionProblem", service.strDescriptionProblem)));
-                                                                          
-                                                                      
+            /*
+           навигационные узлы
+           -XNode
+           -XElement  
+
+           */
+
             Console.WriteLine(serviceHistory.ToString());
-                                                                   
-                                                              
+
+
 
 
         }
 
+        public static void Exmpl_05()
+        {
+            XElement serviceHistory = new XElement("TrackServiceHistory", from service in db.TrackServiceHistory.Take(10).ToList()
+                                                                          select
+                                                                          new XElement("ServiceHistory", new XAttribute("ServiceHistoryId", service.intServiceHistoryId),
+                                                                          new XElement("dRepairDate", service.dRepairDate),
+                                                                          new XElement("strDescriptionProblem", service.strDescriptionProblem),
+                                                                          new XElement("Equipment", new XElement("StopReason", service.intStopReason),
+                                                                          new XElement("SMCSJob", service.strSMCSJob)
+
+                                                                          )));
+            //Console.WriteLine(serviceHistory.ToString());
+
+            IEnumerable<string> findSMCSJob = from doc in serviceHistory.Elements()
+                                   where doc.Elements().Any(a => a.Value == "Плановое ТО-500")
+                                   select doc.Value;
+
+            foreach(string item in findSMCSJob)
+            {
+                Console.WriteLine("-->" + item);
+            }
+
+           //string findSMCSJob2 = serviceHistory.Element("dRepairDate").Value;
+
+           // Console.WriteLine(findSMCSJob2);
+
+
+            //foreach (XElement item in serviceHistory.Elements())
+            //{
+            //    Console.WriteLine("-->" + item.Name + " - " + item.Value);
+            //}
+
+
+
+
         }
+
+        public static void Exmpl_06()
+        {
+            XElement f = new XElement("Test", "001");
+            f.Save("test2.xml");
+            XDocument xDoc = new XDocument(new XDeclaration("1.0", "UTF-8", "yes"),
+                new XElement("rootElement"));
+            xDoc.Save("test3.xml");
+        }
+
+
+
+
+    }
 }
