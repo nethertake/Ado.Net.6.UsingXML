@@ -4,16 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using AdoXML.Model;
 
 namespace AdoXML
 {
     class Program
     {
+       static public Model1 db = new Model1();
         static void Main(string[] args)
         {
 
-            Exmpl_02();
-            Exmpl_03();
+            //Exmpl_02();
+            //Exmpl_03();
+            Exmpl_04();
         }
 
         public static void Exmpl_01()
@@ -55,6 +58,20 @@ namespace AdoXML
             doc.Save("test.xml");
         }
 
+        public static void Exmpl_04()
+        {
+            XElement serviceHistory = new XElement("TrackServiceHistory", from service in db.TrackServiceHistory.ToList()
+                                                                          select
+                                                                          new XElement("ServiceHistory", new XAttribute("ServiceHistoryId", service.intServiceHistoryId),
+                                                                          new XElement("strDescriptionProblem", service.strDescriptionProblem)));
+                                                                          
+                                                                      
+            Console.WriteLine(serviceHistory.ToString());
+                                                                   
+                                                              
 
-    }
+
+        }
+
+        }
 }
