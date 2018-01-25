@@ -13,7 +13,7 @@ namespace AdoXML
         {
 
             Exmpl_02();
-
+            Exmpl_03();
         }
 
         public static void Exmpl_01()
@@ -44,6 +44,15 @@ namespace AdoXML
             string str = doc.ToString();
             XDocument docFromStr = XDocument.Parse(str);
             Console.WriteLine(docFromStr.ToString());
+
+        }
+
+        public static void Exmpl_03()
+        {
+            //сохранение в файл
+            XDocument doc = XDocument.Load(@"\\dc\Студенты\ПКО\SDP-162\ADO.NET\PBook.xml");
+            // doc.Save("test.xml", SaveOptions.DisableFormatting);
+            doc.Save("test.xml");
         }
 
 
