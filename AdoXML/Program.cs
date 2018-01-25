@@ -16,7 +16,7 @@ namespace AdoXML
 
             //Exmpl_02();
             //Exmpl_03();
-            Exmpl_06();
+            Exmpl_07();
         }
 
         public static void Exmpl_01()
@@ -93,17 +93,17 @@ namespace AdoXML
             //Console.WriteLine(serviceHistory.ToString());
 
             IEnumerable<string> findSMCSJob = from doc in serviceHistory.Elements()
-                                   where doc.Elements().Any(a => a.Value == "Плановое ТО-500")
-                                   select doc.Value;
+                                              where doc.Elements().Any(a => a.Value == "Плановое ТО-500")
+                                              select doc.Value;
 
-            foreach(string item in findSMCSJob)
+            foreach (string item in findSMCSJob)
             {
                 Console.WriteLine("-->" + item);
             }
 
-           //string findSMCSJob2 = serviceHistory.Element("dRepairDate").Value;
+            //string findSMCSJob2 = serviceHistory.Element("dRepairDate").Value;
 
-           // Console.WriteLine(findSMCSJob2);
+            // Console.WriteLine(findSMCSJob2);
 
 
             //foreach (XElement item in serviceHistory.Elements())
@@ -119,14 +119,97 @@ namespace AdoXML
         public static void Exmpl_06()
         {
             XElement f = new XElement("Test", "001");
+
+            XNamespace ns = "https:\\google.kz";
+
             f.Save("test2.xml");
-            XDocument xDoc = new XDocument(new XDeclaration("1.0", "UTF-8", "yes"),
-                new XElement("rootElement"));
-            xDoc.Save("test3.xml");
+            XDocument xDoc = new XDocument(
+                new XDeclaration("1.0", "UTF-8", "yes"),
+                new XElement(ns + "rootElement",
+                new XCData("<H1>SomeText</H1>"))
+                );
+
+            xDoc.Save("test4.xml");
+        }
+
+        //добавление
+        public static void Exmpl_07()
+        {
+            XElement xBook = new XElement("BookParticipants",
+             new XElement("BookParticipant", new XAttribute("type", "Author")),
+             new XElement("FirstName", "Joe"),
+             new XElement("LastName", "Rattz"));
+
+            xBook.Element("BookParticipant").Add(new XElement("BookParticipant", new XAttribute("type", "Editor")),
+                new XElement("FirstName", "Buckingham"),
+                new XElement("LastName", "Rattz"));
+
+            xBook.Element("BookParticipant").Elements("BookParticipant").Where(w => (string)w.Element("FirstName") == "Joe")
+            .Single<XElement>().AddAfterSelf(new XElement("BookParticipant", new XAttribute("type", "Editor")),
+                new XElement("FirstName", "Vladimir"),
+                new XElement("LastName", "Skoromniy"));
+
+
         }
 
 
+        public static void Exmpl_08()
+        {
+            XElement bookParticipants;
+            XDocument xDoc = new XDocument(
+                 new XElement("BookParticipants", bookParticipants = 
+              new XElement("BookParticipant", new XAttribute("type", "Author")),
+              new XElement("FirstName", "Joe"),
+              new XElement("LastName", "Rattz"),
 
+              new XElement("BookParticipant", new XAttribute("type", "Editor")),
+              new XElement("FirstName", "Buckingham"),
+              new XElement("LastName", "Rattz"),
+
+                new XElement("BookParticipant", new XAttribute("type", "Editor")),
+              new XElement("FirstName", "Yevgeniy"),
+              new XElement("LastName", "Gertsen")
+              )
+            );
+
+            //detele by namespace
+
+            bookParticipants.Remove();
+
+
+            //delete element
+            xDoc.Elements().Where(w=>(string)w.Attribute("type")=="Author").Remove();
+            xDoc.Elements().Where(w => w.Name == "FirstName").Where(w => w.Value == "Yevgeniy").Remove();
+
+
+            
+        }
+        //обновление значений
+        public static void Exmpl_09()
+        {
+            XDocument xDoc = new XDocument(
+                           new XElement("BookParticipants", 
+                        new XElement("BookParticipant", new XAttribute("type", "Author")),
+                        new XElement("FirstName", "Joe"),
+                        new XElement("LastName", "Rattz"),
+
+                        new XElement("BookParticipant", new XAttribute("type", "Editor")),
+                        new XElement("FirstName", "Buckingham"),
+                        new XElement("LastName", "Rattz"),
+
+                          new XElement("BookParticipant", new XAttribute("type", "Editor")),
+                        new XElement("FirstName", "Yevgeniy"),
+                        new XElement("LastName", "Gertsen")
+                        )
+                      );
+
+            xDoc.Nodes().OfType<XElement>().Where(w=>w.Name== "FirstName").Where(w => w.Value == "Yevgeniy").Single().Value = "Timur";
+
+            var element = xDoc.Nodes().OfType<XElement>().Where(w => w.Name == "FirstName").Single(w => w.Value == "Yevgeniy");
+            element.SetValue("5555");
+
+
+        }
 
     }
 }
